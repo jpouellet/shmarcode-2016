@@ -28,6 +28,7 @@
  */
 
 void lcd_init(void);
+void lcd_fill(uint16_t color);
 void lcd_show_frame(void);
 void lcd_draw_pixel(int x, int y, uint16_t color);
 

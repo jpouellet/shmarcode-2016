@@ -255,6 +255,17 @@ test_image(void)
 	}
 }
 
+/* Fills the display with the given color. */
+void
+lcd_fill(uint16_t color)
+{
+	int x, y;
+
+	for (x = 0; x < LCD_WIDTH; x++)
+		for (y = 0; y < LCD_HEIGHT; y++)
+			lcd_draw_pixel(x, y, color);
+}
+
 /*
  * void lcd_show_frame(void)
  *
