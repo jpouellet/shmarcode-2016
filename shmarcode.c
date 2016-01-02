@@ -37,9 +37,8 @@ int _write(int fd, char *ptr, int len);
 static void
 gpio_setup(void)
 {
-	/* Setup GPIO pin GPIO13 on GPIO port G for LED. */
 	rcc_periph_clock_enable(RCC_GPIOG);
-	gpio_mode_setup(GPIOG, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO13);
+	gpio_mode_setup(GPIOG, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO13 | GPIO14);
 
 	/* Setup GPIO D pins for the USART2 function */
 	rcc_periph_clock_enable(RCC_GPIOD);
@@ -92,11 +91,13 @@ main(void)
 
 	printf("System initialized.\n");
 
+	/* Start with one LED on so that they flip. */
+	gpio_toggle(GPIOG, GPIO13); /* The green one. */
+
 	for (;;) {
-		/* Blink the LED (PG13) on the board with each fractal drawn. */
-		gpio_toggle(GPIOG, GPIO13);	/* LED on/off */
+		gpio_toggle(GPIOG, GPIO13 | GPIO14);
 		update_frame();
-		lcd_show_frame();		/* show it */
+		lcd_show_frame();
 	}
 
 	return 0;
