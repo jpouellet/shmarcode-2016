@@ -1,11 +1,10 @@
 /*
- * This file is part of the libopencm3 project.
- *
  * Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2011 Stephen Caudle <scaudle@doceme.com>
  * Copyright (C) 2012 Daniel Serpell <daniel.serpell@gmail.com>
  * Copyright (C) 2015 Piotr Esden-Tempski <piotr@esden.net>
  * Copyright (C) 2015 Chuck McManis <cmcmanis@mcmanis.com>
+ * Copyright (C) 2015 Jean-Philippe Ouellet <jpo@vt.edu>
  *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
