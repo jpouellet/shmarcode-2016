@@ -35,7 +35,8 @@
 void uart_putc(char c);
 int _write(int fd, char *ptr, int len);
 
-static void gpio_setup(void)
+static void
+gpio_setup(void)
 {
 	/* Setup GPIO pin GPIO13 on GPIO port G for LED. */
 	rcc_periph_clock_enable(RCC_GPIOG);
@@ -56,8 +57,8 @@ static void gpio_setup(void)
 	usart_enable(USART2);
 }
 
-void update_frame(void); /* -Wmissing-prototypes */
-void update_frame(void)
+static void
+update_frame(void)
 {
 	int x, y;
 	uint16_t pixel;
@@ -72,7 +73,8 @@ void update_frame(void)
 	}
 }
 
-int main(void)
+int
+main(void)
 {
 	/* Clock setup */
 	clock_setup();
@@ -85,7 +87,7 @@ int main(void)
 
 	printf("System initialized.\n");
 
-	while (1) {
+	for (;;) {
 		/* Blink the LED (PG13) on the board with each fractal drawn. */
 		gpio_toggle(GPIOG, GPIO13);	/* LED on/off */
 		update_frame();
@@ -106,8 +108,8 @@ int main(void)
  * transmit buffer.
  */
 void
-uart_putc(char c) {
-
+uart_putc(char c)
+{
 	while ((USART_SR(USART2) & USART_SR_TXE) == 0);
 	USART_DR(USART2) = c;
 }
