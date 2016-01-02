@@ -35,8 +35,6 @@
 void uart_putc(char c);
 int _write(int fd, char *ptr, int len);
 
-void mandel(float, float, float);
-
 static void gpio_setup(void)
 {
 	/* Setup GPIO pin GPIO13 on GPIO port G for LED. */
@@ -58,93 +56,24 @@ static void gpio_setup(void)
 	usart_enable(USART2);
 }
 
-/* Maximum number of iterations for the escape-time calculation */
-#define max_iter 32
-uint16_t lcd_colors[] = {
-	0x0,
-	0x1f00,
-	0x00f8,
-	0xe007,
-	0xff07,
-	0x1ff8,
-	0xe0ff,
-	0xffff,
-	0xc339,
-	0x1f00 >> 1,
-	0x00f8 >> 1,
-	0xe007 >> 1,
-	0xff07 >> 1,
-	0x1ff8 >> 1,
-	0xe0ff >> 1,
-	0xffff >> 1,
-	0xc339 >> 1,
-	0x1f00 << 1,
-	0x00f8 << 1,
-	0x6007 << 1,
-	0x6f07 << 1,
-	0x1ff8 << 1,
-	0x60ff << 1,
-	0x6fff << 1,
-	0x4339 << 1,
-	0x1f00 ^ 0x6ac9,
-	0x00f8 ^ 0x6ac9,
-	0xe007 ^ 0x6ac9,
-	0xff07 ^ 0x6ac9,
-	0x1ff8 ^ 0x6ac9,
-	0xe0ff ^ 0x6ac9,
-	0xffff ^ 0x6ac9,
-	0xc339 ^ 0x6ac9,
-	0,
-	0,
-	0,
-	0,
-	0
-};
-
-
-static int iterate(float, float);
-/* Main mandelbrot calculation */
-static int iterate(float px, float py)
-{
-	int it = 0;
-	float x = 0, y = 0;
-	while (it < max_iter) {
-		float nx = x*x;
-		float ny = y*y;
-		if ((nx + ny) > 4) {
-			return it;
-		}
-		/* Zn+1 = Zn^2 + P */
-		y = 2*x*y + py;
-		x = nx - ny + px;
-		it++;
-	}
-	return 0;
-}
-
-void mandel(float cx, float cy, float scale)
+void update_frame(void); /* -Wmissing-prototypes */
+void update_frame(void)
 {
 	int x, y;
-	int change = 0;
-	for (x = -120; x < 120; x++) {
-		for (y = -160; y < 160; y++) {
-			int i = iterate(cx + x*scale, cy + y*scale);
-			if (i >= max_iter) {
-				i = max_iter;
-			} else {
-				change++;
-			}
-			lcd_draw_pixel(x+120, y+160, lcd_colors[i]);
+	uint16_t pixel;
+
+	for (x = 0; x < LCD_WIDTH; x++) {
+		for (y = 0; y < LCD_HEIGHT; y++) {
+			pixel = 0;
+			if (!(x & 0xf) || !(y & 0xf))
+				pixel = 0xffff;
+			lcd_draw_pixel(x, y, pixel);
 		}
 	}
 }
 
 int main(void)
 {
-	int gen = 0;
-	float scale = 0.25f, center_x = -0.5f, center_y = 0.0f;
-
-
 	/* Clock setup */
 	clock_setup();
 	/* USART and GPIO setup */
@@ -158,25 +87,9 @@ int main(void)
 
 	while (1) {
 		/* Blink the LED (PG13) on the board with each fractal drawn. */
-		gpio_toggle(GPIOG, GPIO13);		/* LED on/off */
-		mandel(center_x, center_y, scale);	/* draw mandelbrot */
-		lcd_show_frame();			/* show it */
-		/* Change scale and center */
-		center_x += 0.1815f * scale;
-		center_y += 0.505f * scale;
-		scale	*= 0.875f;
-		gen++;
-		if (gen > 99) {
-			scale = 0.25f;
-			center_x = -0.5f;
-			center_y = 0.0f;
-			gen = 0;
-		}
-		/*
-		printf("Generation: %d\n", generation);
-		printf("Cx, Cy = %9.2f, %9.2f, scale = %9.2f\n",
-				center_x, center_y, scale);
-		*/
+		gpio_toggle(GPIOG, GPIO13);	/* LED on/off */
+		update_frame();
+		lcd_show_frame();		/* show it */
 	}
 
 	return 0;
