@@ -31,6 +31,19 @@
 #include "clock.h"
 #include "sdram.h"
 #include "lcd.h"
+#include "my_barcode.h"
+
+#define QR_LEVEL (2)
+#define QR_VERSION (4)
+#define QR_MARGIN (4) /* pixels */
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+/*
+ * Don't know why, but my display seems about 1.5 px off in the X direction
+ * and about 0.5 px off in the Y direction from where I think it should be.
+ */
+#define X_OFFSET (1)
+#define Y_OFFSET (0)
 
 /* utility functions */
 void uart_putc(char c);
@@ -64,17 +77,19 @@ draw_qr(void)
 	int width, x, y, i, j;
 
 	memset(encoded, 0, sizeof(encoded));
-	width = qr_enc(QR_LEVEL_H, QR_VERSION_L, "foo", 0, encoded);
+	width = qr_enc(QR_LEVEL, QR_VERSION, MY_BARCODE, 0, encoded);
 
 	for (x = 0; x < width; x++) {
 		for (y = 0; y < width; y++) {
 			int byte = (x * width + y) / 8;
 			int bit = (x * width + y) % 8;
 			int value = encoded[byte] & (0x80 >> bit);
-			int pxw = 220 / width;
-			for (i = 0; i < pxw; i++)
-				for (j = 0; j < pxw; j++)
-					lcd_draw_pixel(x*pxw+10+i, y*pxw+10+j,
+			int px_width = (MIN(LCD_WIDTH, LCD_HEIGHT) - QR_MARGIN*2) / width;
+			for (i = 0; i < px_width ; i++)
+				for (j = 0; j < px_width; j++)
+					lcd_draw_pixel(
+					    x * px_width + QR_MARGIN + i + X_OFFSET,
+					    y * px_width + QR_MARGIN + j + Y_OFFSET,
 					    value ? LCD_BLACK : LCD_WHITE);
 		}
 	}

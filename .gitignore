@@ -4,3 +4,4 @@
 *.map
 qr.c
 qr.h
+my_barcode.h
