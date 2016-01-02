@@ -43,19 +43,19 @@ static void gpio_setup(void)
 	rcc_periph_clock_enable(RCC_GPIOG);
 	gpio_mode_setup(GPIOG, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO13);
 
-	/* Setup GPIO A pins for the USART1 function */
-	rcc_periph_clock_enable(RCC_GPIOA);
-	rcc_periph_clock_enable(RCC_USART1);
-	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10);
-	gpio_set_af(GPIOA, GPIO_AF7, GPIO9 | GPIO10);
+	/* Setup GPIO D pins for the USART2 function */
+	rcc_periph_clock_enable(RCC_GPIOD);
+	rcc_periph_clock_enable(RCC_USART2);
+	gpio_mode_setup(GPIOD, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO5);
+	gpio_set_af(GPIOD, GPIO_AF7, GPIO5);
 
-	usart_set_baudrate(USART1, 115200);
-	usart_set_databits(USART1, 8);
-	usart_set_stopbits(USART1, USART_STOPBITS_1);
-	usart_set_mode(USART1, USART_MODE_TX_RX);
-	usart_set_parity(USART1, USART_PARITY_NONE);
-	usart_set_flow_control(USART1, USART_FLOWCONTROL_NONE);
-	usart_enable(USART1);
+	usart_set_baudrate(USART2, 115200);
+	usart_set_databits(USART2, 8);
+	usart_set_stopbits(USART2, USART_STOPBITS_1);
+	usart_set_mode(USART2, USART_MODE_TX_RX);
+	usart_set_parity(USART2, USART_PARITY_NONE);
+	usart_set_flow_control(USART2, USART_FLOWCONTROL_NONE);
+	usart_enable(USART2);
 }
 
 /* Maximum number of iterations for the escape-time calculation */
@@ -195,8 +195,8 @@ int main(void)
 void
 uart_putc(char c) {
 
-	while ((USART_SR(USART1) & USART_SR_TXE) == 0);
-	USART_DR(USART1) = c;
+	while ((USART_SR(USART2) & USART_SR_TXE) == 0);
+	USART_DR(USART2) = c;
 }
 
 /*
@@ -224,4 +224,3 @@ _write(int fd, char *ptr, int len)
 	}
 	return i;
 }
-
