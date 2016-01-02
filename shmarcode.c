@@ -21,11 +21,13 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/cm3/systick.h>
+#include "qr.h"
 #include "clock.h"
 #include "sdram.h"
 #include "lcd.h"
@@ -56,25 +58,26 @@ gpio_setup(void)
 }
 
 static void
-update_frame(void)
+draw_qr(void)
 {
-	int x, y;
-	uint16_t pixel;
+	unsigned char encoded[MAX_BITDATA];
+	int width, x, y, i, j;
 
-	for (x = 0; x < LCD_WIDTH; x++) {
-		for (y = 0; y < LCD_HEIGHT; y++) {
-			pixel = 0;
-			if (!(x & 0xf) || !(y & 0xf))
-				pixel = 0xffff;
-			lcd_draw_pixel(x, y, pixel);
+	memset(encoded, 0, sizeof(encoded));
+	width = qr_enc(QR_LEVEL_H, QR_VERSION_L, "foo", 0, encoded);
+
+	for (x = 0; x < width; x++) {
+		for (y = 0; y < width; y++) {
+			int byte = (x * width + y) / 8;
+			int bit = (x * width + y) % 8;
+			int value = encoded[byte] & (0x80 >> bit);
+			int pxw = 220 / width;
+			for (i = 0; i < pxw; i++)
+				for (j = 0; j < pxw; j++)
+					lcd_draw_pixel(x*pxw+10+i, y*pxw+10+j,
+					    value ? LCD_BLACK : LCD_WHITE);
 		}
 	}
-	for (x = 0; x < LCD_WIDTH; x += 2)
-		for (y = 0; y < 2; y++)
-			lcd_draw_pixel(x, y, LCD_RED);
-	for (x = 0; x < 2 ; x++)
-		for (y = 0; y < LCD_HEIGHT; y += 2)
-			lcd_draw_pixel(x, y, LCD_BLUE);
 }
 
 int
@@ -96,7 +99,8 @@ main(void)
 
 	for (;;) {
 		gpio_toggle(GPIOG, GPIO13 | GPIO14);
-		update_frame();
+		lcd_fill(LCD_WHITE);
+		draw_qr();
 		lcd_show_frame();
 	}
 

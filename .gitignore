@@ -2,3 +2,5 @@
 *.d
 *.elf
 *.map
+qr.c
+qr.h
