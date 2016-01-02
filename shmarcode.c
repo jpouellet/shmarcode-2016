@@ -70,6 +70,12 @@ update_frame(void)
 			lcd_draw_pixel(x, y, pixel);
 		}
 	}
+	for (x = 0; x < LCD_WIDTH; x += 2)
+		for (y = 0; y < 2; y++)
+			lcd_draw_pixel(x, y, LCD_RED);
+	for (x = 0; x < 2 ; x++)
+		for (y = 0; y < LCD_HEIGHT; y += 2)
+			lcd_draw_pixel(x, y, LCD_BLUE);
 }
 
 int
