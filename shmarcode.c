@@ -4,7 +4,7 @@
  * Copyright (C) 2012 Daniel Serpell <daniel.serpell@gmail.com>
  * Copyright (C) 2015 Piotr Esden-Tempski <piotr@esden.net>
  * Copyright (C) 2015 Chuck McManis <cmcmanis@mcmanis.com>
- * Copyright (C) 2015 Jean-Philippe Ouellet <jpo@vt.edu>
+ * Copyright (C) 2016 Jean-Philippe Ouellet <jpo@vt.edu>
  *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
