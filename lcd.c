@@ -64,7 +64,7 @@ lcd_draw_pixel(int x, int y, uint16_t color)
 		printf("Draw out of range [%d, %d]\n", x, y);
 		while (1);
 	}
-	*(cur_frame + x + y * LCD_WIDTH) = color;
+	*(cur_frame + (LCD_WIDTH - x) + y * LCD_WIDTH) = color;
 }
 
 /*
